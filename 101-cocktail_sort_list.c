@@ -1,67 +1,83 @@
 #include "sort.h"
-#include <stdio.h>
-/**
- *swap_node - swap a node for his previous one
- *@node: node
- *@list: node list
- *Return: return a pointer to a node which was enter it
- */
-listint_t *swap_node(listint_t *node, listint_t **list)
-{
-	listint_t *back = node->prev, *current = node;
-	/*NULL, 19, 48, 9, 71, 13, NULL*/
 
-	back->next = current->next;
-	if (current->next)
-		current->next->prev = back;
-	current->next = back;
-	current->prev = back->prev;
-	back->prev = current;
-	if (current->prev)
-		current->prev->next = current;
+/**
+ * swapp_list - Swaps linked list nodes then prints list
+ * @list: Linked list to swap
+ * @n1: First node
+ * @n2: Second node
+ */
+void swapp_list(listint_t **list, listint_t *n1, listint_t *n2)
+{
+	if (n1->prev)
+		n1->prev->next = n2;
 	else
-		*list = current;
-	return (current);
+		(*list) = n2;
+	if (n2->next)
+		n2->next->prev = n1;
+	n2->prev = n1->prev;
+	n1->next = n2->next;
+	n2->next = n1;
+	n1->prev = n2;
+	print_list(*list);
+}
+
+/**
+ * scan_list - Scans list in specified direction and calls swapp_list
+ * @list: Linked list to scan
+ * @current: Current node
+ * @mode: Scans forward if 1, backwards if 0
+ *
+ * Return: 1 on swap being performed, otherwise 0
+ */
+int scan_list(listint_t **list, listint_t **current, int mode)
+{
+	int swp;
+
+	swp = 0;
+	if (mode)
+		while ((*current)->next)
+		{
+			if ((*current)->n > (*current)->next->n)
+			{
+				swapp_list(*&list, *current, (*current)->next);
+				swp = 1;
+			}
+			else
+				(*current) = (*current)->next;
+		}
+	else
+		while ((*current)->prev)
+		{
+			if ((*current)->n < (*current)->prev->n)
+			{
+				swapp_list(*&list, (*current)->prev, *current);
+				swp = 1;
+			}
+			else
+				*current = (*current)->prev;
+		}
+	return (swp);
 }
 /**
- *cocktail_sort_list - this is a cocktail sort implementation
- *working on a double linked lists
- *@list: list
+ * cocktail_sort_list - Cocktail shaker sort
+ * @list: Linked list to sort
  */
 void cocktail_sort_list(listint_t **list)
 {
-	listint_t *node;
-	int swap_done = 1;
+	listint_t *current;
+	int swp;
 
-	if (list == '\0' || (*list) == '\0' || (*list)->next == '\0')
-		return;
-	node = *list;
-	while (swap_done == 1)
+	swp = 1;
+	if (list)
 	{
-		swap_done = 0;
-		while (node->next)
+		current = *list;
+		while (swp)
 		{
-			if (node->n > node->next->n)
-			{
-				node = swap_node(node->next, list);
-				swap_done = 1;
-				print_list(*list);
-			}
-			node = node->next;
-		}
-		if (swap_done == 0)
-			break;
-		swap_done = 0;
-		while (node->prev)
-		{
-			if (node->n < node->prev->n)
-			{
-				node = swap_node(node, list);
-				swap_done = 1;
-				print_list(*list);
-			}
-			else
-				node = node->prev;
+			swp = 0;
+			swp = scan_list(*&list, &current, 1);
+			if (!swp)
+				break;
+			swp = scan_list(*&list, &current, 0);
 		}
 	}
 }
