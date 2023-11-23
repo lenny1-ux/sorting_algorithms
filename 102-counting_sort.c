@@ -16,7 +16,6 @@ int range(int *array)
 			max = array[i];
 	return (max);
 }
-
 /**
  * counting_sort - Counting sort algorithm
  * @array: Pointer to array to sort
